@@ -1,4 +1,4 @@
-const contactsFn = require("./conatcts");
+const contactsFn = require("./controllers/contacts/index");
 
 const { Command } = require("commander");
 const program = new Command();
@@ -13,27 +13,25 @@ program.parse(process.argv);
 
 const argv = program.opts();
 
-function invokeAction({ action, id, name, email, phone }) {
+async function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":
-      contactsFn.listContacts();
-      break;
+      return await contactsFn.listContacts();
 
     case "get":
-      contactsFn.getContactById(Number(id));
-      break;
+      return await contactsFn.getContactById(Number(id));
 
     case "add":
-      contactsFn.addContact(name, email, phone);
-      break;
+      return await contactsFn.addContact(name, email, phone);
 
     case "remove":
-      contactsFn.removeContact(Number(id));
-      break;
+      return await contactsFn.removeContact(Number(id));
 
     default:
       console.warn("\x1B[31m Unknown action type!");
   }
 }
 
-invokeAction(argv);
+(async () => {
+  await invokeAction(argv);
+})();
