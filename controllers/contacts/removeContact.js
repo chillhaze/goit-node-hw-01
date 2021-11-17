@@ -1,28 +1,23 @@
-const path = require("path");
-const fs = require("fs").promises;
-
-const contactsPath = path.resolve("db/contacts.json");
+const contactsList = require("./getContactsList");
+const updateContacts = require("./updateContacts");
 
 //delete contact
-async function removeContact(contactId) {
+const removeContact = async (contactId) => {
   try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    const contacts = JSON.parse(data);
+    const contacts = await contactsList();
     const updatedContacts = [];
 
     contacts.map((item) => {
       if (item.id !== contactId) {
         updatedContacts.push(item);
 
-        fs.writeFile(contactsPath, JSON.stringify(updatedContacts));
-        console.table(updatedContacts);
-
-        return contacts;
+        updateContacts(updatedContacts);
       }
     });
+    return updatedContacts;
   } catch (error) {
-    console.error(error);
+    return error;
   }
-}
+};
 
 module.exports = removeContact;

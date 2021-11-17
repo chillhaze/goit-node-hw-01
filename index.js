@@ -16,16 +16,40 @@ const argv = program.opts();
 async function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":
-      return await contactsFn.listContacts();
+      const contacts = await contactsFn.listContacts();
+      console.table(contacts);
+      break;
 
     case "get":
-      return await contactsFn.getContactById(Number(id));
+      const contact = await contactsFn.getContactById(Number(id));
+      if (!contact) {
+        throw new Error(`Contact with id:${id} not found`);
+      }
+      console.table(contact);
+      break;
 
     case "add":
-      return await contactsFn.addContact(name, email, phone);
+      const updatedContacts = await contactsFn.addContact(name, email, phone);
+      console.table(updatedContacts);
+      break;
+
+    case "update":
+      const updateContact = await contactsFn.updateContactById(
+        id,
+        name,
+        email,
+        phone
+      );
+      if (!updateContact) {
+        throw new Error(`Contact with id:${id} not found`);
+      }
+      console.log(updateContact);
+      break;
 
     case "remove":
-      return await contactsFn.removeContact(Number(id));
+      const modifiedContacts = await contactsFn.removeContact(Number(id));
+      console.table(modifiedContacts);
+      break;
 
     default:
       console.warn("\x1B[31m Unknown action type!");

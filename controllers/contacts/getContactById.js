@@ -1,22 +1,17 @@
-const path = require("path");
-const fs = require("fs").promises;
-
-const contactsPath = path.resolve("db/contacts.json");
+const contactsList = require("./getContactsList");
 
 //get contact by id
-async function getContactById(contactId) {
+const getContactById = async (contactId) => {
   try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    const contacts = JSON.parse(data);
-    contacts.map((item) => {
-      if (item.id === contactId) {
-        console.table(item);
-        return item;
-      }
-    });
+    const contacts = await contactsList();
+    const result = contacts.find((item) => item.id === contactId);
+    if (!result) {
+      return null;
+    }
+    return result;
   } catch (error) {
-    console.error(error);
+    return error;
   }
-}
+};
 
 module.exports = getContactById;

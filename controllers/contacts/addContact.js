@@ -1,15 +1,11 @@
-const path = require("path");
-const fs = require("fs").promises;
-
-const contactsPath = path.resolve("db/contacts.json");
+const contactsList = require("./getContactsList");
+const updateContacts = require("./updateContacts");
 
 //add new contact
-async function addContact(name, email, phone) {
+const addContact = async (name, email, phone) => {
   try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    const contacts = JSON.parse(data);
+    const contacts = await contactsList();
     let contactNewId = 0;
-
     for (let i = 0; i < contacts.length + 1; i++) {
       contactNewId = i + 1;
     }
@@ -21,21 +17,14 @@ async function addContact(name, email, phone) {
       phone,
     };
 
-    const updatedContacts = [...contacts, newContact];
+    contacts.push(newContact);
 
-    fs.writeFile(contactsPath, JSON.stringify(updatedContacts));
-    console.table(updatedContacts);
+    await updateContacts(contacts);
 
     return contacts;
   } catch (error) {
-    console.error(error);
+    return error;
   }
-
-  fs.readFile(contactsPath, "utf8")
-    .then((data) => {
-      const parsedData = JSON.parse(data);
-    })
-    .catch((error) => console.log(error));
-}
+};
 
 module.exports = addContact;
